@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Ellis Memorial</title>
+    <link rel="stylesheet" href="index.css" />
+    <script>
+ 
+    </script>
+  </head>
+  <body>
+    <div class="navbar">
+      <a href="index.html"><h5>Registration</h5></a>
+      <a href="search.html"><h5>Search</h5></a>
+      <a href="subscription.html"><h5>Subscription</h5></a>
+    </div>
+
+    <div class="container">
+      <h2>Member Registration</h2>
+      <form id="registrationForm" onsubmit="saveMember(event)" method="post">
+        <label for="familyId">Family Id</label>
+        <input
+          type="text"
+          id="familyId"
+          name="familyId"
+          
+          placeholder="Enter the Family Identifier"
+        />
+
+        <label for="serialId">Serial No</label>
+        <input
+          type="text"
+          id="serialId"
+          name="serialId"
+          placeholder="Enter the Serial Number"
+        />
+       
+        <label for="name">Name</label>
+        <input
+          type="text"
+          id="name"
+          name="name"
+          placeholder="Enter your full name"
+        />
+        <span class="error" id="nameError"></span>
+        <label for="gender">Gender</label>
+       <select name="gender">
+        <option value="M">Male</option>
+        <option value="F">Female</option>
+       </select>
+        <span class="error" id="nameError"></span>
+        <label for="relation">Relation</label>
+        <input
+          type="text"
+          id="relation"
+          name="relation"
+          placeholder="Enter your the relation"
+        />
+        <span class="error" id="nameError"></span>
+
+        <label for="mailAddress">Email:</label>
+        <input
+          type="email"
+          id="mailAddress"
+          name="mailAddress"
+          
+          placeholder="Enter your email"
+        />
+        <span class="error" id="emailError"></span>
+
+        <label for="birthDay">Date of Birth:</label>
+        <input type="date" id="birthDay" name="birthDay"  />
+        <span class="error" id="dobError"></span>
+
+        <label for="weddingDay">Date of Wedding:</label>
+        <input type="date" id="weddingDay" name="weddingDay"  />
+        <span class="error" id="dowError"></span>
+
+        <label for="dateOfConfirmation">Date of Confirmation:</label>
+        <input type="date" id="dateOfConfirmation" name="dateOfConfirmation"  />
+        <span class="error" id="docError"></span>
+
+        <label for="dateOfBaptism">Date of Baptism:</label>
+        <input type="date" id="dateOfBaptism" name="dateOfBaptism"  />
+
+        <label for="occupation">Occupation</label>
+        <input type="text" id="occupation" name="occupation"  />
+
+        <label for="grossSalary">Gross Salary</label>
+        <input type="text" id="grossSalary" name="grossSalary"  />
+
+        <label for="bloodGroup">Blood Group</label>
+        <input type="text" id="bloodGroup" name="bloodGroup"  />
+
+
+        <label for="phoneNumber">Phone Number</label>
+        <input type="number" id="phoneNumber" name="phoneNumber"  />
+
+        <label for="address">Address</label>
+        <textarea id="address" name="address" rows="3" cols="10"></textarea>
+
+        <label for="pincode">PIN Code</label>
+        <input type="number" id="pincode" name="pincode"  />
+
+        <label for="memberShip">MemberShip</label>
+        <input type="number" id="memberShip" name="memberShip"  />
+        
+        
+        <button type="submit">Register</button>
+      </form>  
+      <script src="renderer.js"></script>
+
+  </body>
+</html>
