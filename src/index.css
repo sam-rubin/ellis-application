@@ -3,6 +3,7 @@ body {
   margin: 20px;
   padding: 20px;
   background-color: #f4f4f4;
+  background-image: url('https://en.wikipedia.org/wiki/File:CSI_Ellis_Memorial_Church.jpg');
 }
 .container {
   max-width: 500px;
@@ -15,6 +16,11 @@ body {
 h2 {
   text-align: center;
   color: #007bff;
+}
+
+h3{
+  text-align: center;
+  color: brown;
 }
 label {
   font-weight: bold;

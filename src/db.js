@@ -1,13 +1,40 @@
 const mysql = require("mysql2/promise");
+const {Sequelize} = require('sequelize');
 
 const pool = mysql.createPool({
   host: "localhost", // Change this to your MySQL host
   user: "root", // Change this to your MySQL username
-  password: "password", // Change this to your MySQL password
-  database: "learn", // Change this to your database name
+  password: "Almighty@123", // Change this to your MySQL password
+  database: "church", // Change this to your database name
   waitForConnections: true,
   connectionLimit: 5, // Max connections
   queueLimit: 0,
 });
 
-module.exports = pool;
+
+const sequelize = new Sequelize('church','root','Almighty@123',{
+host: "localhost", // Change this to your MySQL host
+dialect:"mysql",
+logging: console.log,
+pool:{
+  max:2,
+  min:0,
+  acquire:30000,
+  idle:100
+}
+
+});
+
+async function testConnection() {
+try {
+    await sequelize.authenticate();
+    console.log("Connection has been successfully established");
+  }catch(error){
+    console.log("Unable to connect to the database:",error);
+  }
+  
+}
+
+testConnection();
+
+module.exports = {pool,sequelize};

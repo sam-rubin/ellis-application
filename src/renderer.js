@@ -9,6 +9,7 @@ let tableContentKey = [
   "address",
   "memberShip",
 ];
+
 async function saveMember(event) {
   event.preventDefault(); // Prevent default form submission
   let submittedForm = new FormData(event.target);
@@ -21,10 +22,19 @@ async function saveMember(event) {
 
   console.log("inside save member", member);
   let response = await window.electron.send("save-member", member);
-  console.log("The response is ", response);
-  alert("Member added successfully");
-  console.log("inside save member", member);
+ 
+ console.log("The response is ", response);
 }
+
+window.electron.receive("registration-response",(response) =>{
+  console.log('Registration Response is ',response);
+  if(response === 'error'){
+      alert("Member Registration Failed");
+  } else {
+      alert("Member has been Registered Successfully");
+  }
+
+});
 
 function searchMember(event) {
   event.preventDefault(); // Prevent default form submission
@@ -32,8 +42,14 @@ function searchMember(event) {
   let submittedForm = new FormData(event.target);
   let familyId = submittedForm.get("familyId");
   let name = submittedForm.get("name");
-  window.electron.send("search-users", { familyId, name });
+  let birthDayStartDate = submittedForm.get("bithday-start-date");
+  let birthDayEndDate = submittedForm.get("bithday-end-date");
+  let weddingStartDate = submittedForm.get("wedding-start-date");
+  let weddingEndDate = submittedForm.get("wedding-end-date");
+  window.electron.send("search-users", { familyId, name,birthDayEndDate,birthDayStartDate,weddingEndDate,weddingStartDate });
 }
+
+
 
 window.electron.receive("search-results", (results) => {
   console.log(JSON.stringify(results));
@@ -51,14 +67,12 @@ function createTable(results) {
       "Email address",
       "Address",
       "Membership",
+      "Subscription"
     ],
   ];
 
-  if (results) {
-    // Create table element
+  if (results && results.length > 0) {
     const table = document.createElement("table");
-
-    // Loop through data to create rows & cells
     for (let row of data) {
       let tr = document.createElement("tr");
 
@@ -78,12 +92,12 @@ function createTable(results) {
         content.textContent = result[key];
         row.appendChild(content);
       }
+      let anchor =  document.createElement("a");
+      
       table.appendChild(row);
     }
 
-    // Append table to the container
-
-    container.innerHTML = ""; // Clear previous tables
+    container.innerHTML = ""; 
     container.appendChild(table);
   } else {
     container.innerHTML = "<h3>No Results Found</h3>";
