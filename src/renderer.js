@@ -92,7 +92,7 @@ function createTable(results) {
         content.textContent = result[key];
         row.appendChild(content);
       }
-      let anchor =  document.createElement("a");
+      row.addEventListener('click',handleRowClicked)
       
       table.appendChild(row);
     }

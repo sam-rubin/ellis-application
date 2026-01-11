@@ -2,26 +2,18 @@ const { app, BrowserWindow, ipcMain } = require("electron");
 const path = require("node:path");
 const {pool} = require("./db");
 const { error } = require("node:console");
+const Member = require('./models/Members');
+const {sequelize} = require('./db')
+let mainWindowAlias;
+async function main(){
 
-const keyDataType = {
-  familyId: "number",
-  serialId: "number",
-  name: "string",
-  gender: "string",
-  relation: "string",
-  mailAddress: "string",
-  birthDay: "date",
-  weddingDay: "date",
-  dateOfConfirmation: "date",
-  dateOfBaptism: "date",
-  occupation: "string",
-  grossSalary: "number",
-  bloodGroup: "string",
-  phoneNumber: "number",
-  address: "string",
-  pincode: "number",
-  memberShip: "string",
-};
+  try {
+    await sequelize.sync({force: false});
+    console.log('db synced');
+  }catch(error){
+    console.log('error syncing db ',error );
+  }
+}
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require("electron-squirrel-startup")) {
   app.quit();
@@ -37,9 +29,11 @@ const createWindow = () => {
       preload: path.join(__dirname, "preload.js"),
       nodeIntegration: false,
       contextIsolation: true,
+      
     },
   });
 
+  mainWindowAlias = mainWindow;
   // and load the index.html of the app.
   mainWindow.loadFile(path.join(__dirname, "index.html"));
 };
@@ -73,46 +67,37 @@ ipcMain.on("save-member", async (channel, member) => {
   let response = await saveMembers(member);
   channel.reply('registration-response',response === 'error occurred' ? "error" : "success");
  }catch(error){
-  console.log("Inside the error blog");
+  console.log("Inside the error blog ",error);
  }
 
 });
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
 
-async function saveMembers(member) {
-  let keys = Object.keys(member);
-  let values = [];
-  let colList = "";
-  for (let key of keys) {
-    colList += key + ",";
-    if (member[key]) {
-      if ("number" === keyDataType[key]) {
-        values.push(parseInt(member[key]));
-      } else if ("date" === keyDataType[key]) {
-        let dateField = member[key];
-        values.push(new Date(dateField).toISOString().slice(0, 10));
-      } else if ("string" == keyDataType[key]) {
-        values.push(member[key]);
-      }
-    } else {
-      values.push(null);
-    }
-  }
+async function saveMembers(member){
+ const  {familyId,serialId,name,gender,relation,mailAddress,birthDay,weddingDay,dateOfConfirmation,dateOfBaptism,occupation,grossSalary,bloodGroup,phoneNumber,address,pincode,memberShip} = member;
 
-  console.log("keys are and values ", keys, values);
-  let columns = colList.slice(0, colList.length - 1);
-
-  let sql = `INSERT INTO members(${columns}) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
-  try{
-  let response = await pool.execute(sql,values);
-  console.log("Response is ",response);
-  }catch(err){
-    console.log("Error Response is ",err);
-    return "error occurred";
-  }
+  const persistedMember = await Member.create({
+    familyId,
+    serialId,
+    name,
+    gender,
+    relation,
+    mailAddress,
+    birthDay,
+    weddingDay : weddingDay || null,
+    dateOfConfirmation : dateOfConfirmation || null,
+    dateOfBaptism : dateOfBaptism || null,
+    occupation : occupation || null,
+    grossSalary : grossSalary || null,
+    bloodGroup: bloodGroup || null,
+    phoneNumber:phoneNumber || null,
+    address,
+    pincode: pincode || null,
+    memberShip
+})
+console.log('Created User ',persistedMember.toJSON())
 }
-
 ipcMain.on("search-users", async (event, { name, familyId, birthDayEndDate,birthDayStartDate,weddingEndDate,weddingStartDate }) => {
   console.log("inside search users", name, familyId,birthDayEndDate,birthDayStartDate,weddingEndDate,weddingStartDate);
   try {
@@ -160,4 +145,12 @@ ipcMain.on("search-users", async (event, { name, familyId, birthDayEndDate,birth
   } catch (err) {
     console.error("Database error:", err);
   }
+});
+
+
+ipcMain.on('navigate-subscription',async (event,state) => {
+   mainWindowAlias.loadFile(path.join(__dirname, "bill.html"));
+   mainWindowAlias.webContents.once('did-finish-load', () => {
+    mainWindowAlias.webContents.send('state-data',state);
+   });
 });
