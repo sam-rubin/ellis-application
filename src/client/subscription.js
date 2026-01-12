@@ -38,90 +38,104 @@ window.onload = () => {
             amount:amount};
     const htmlContent = `
       <!DOCTYPE html>
-      <html>
-      <head>
-        <style>
-          body {
-            font-family: Arial, sans-serif;
-            max-width: 500px;
-            margin: 50px auto;
-            padding: 20px;
-            background-color: #f5f5f5;
-            
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Subscription Summary</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "Segoe UI", Tahoma, sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-            label {
-            display: block;
-            margin-bottom: 5px;
-            color: #555;
-            font-weight: bold;
-        }
-        input[type="text"],
-        input[type="number"],
-        select,
-        textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-            font-size: 14px;
-        }
-        textarea {
-            resize: vertical;
-            min-height: 60px;
-        }
-        button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 12px 30px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            margin-top: 10px;
-        }
-              .output {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 2px solid #eee;
-        }
-        .output h3 {
-            color: #333;
-            margin-bottom: 15px;
-        }
-        </style>
-      </head>
-      <body>
-      <div class="output" id="output" >
-        <h2>Subscription Information</h2>
-            <div class="form-group">
-                <label for="outputName">Name:</label>
-                <input type="text" id="outputName" value=${state.name} readonly>
-            </div>
-            <div class="form-group">
-                <label for="month">Month:</label>
-                <input type="text" id="month" value=${state.month} readonly></input>
-            </div>
-            <div class="form-group">
-                <label for="year">Year:</label>
-                <input type="text" id="year" value=${state.year} readonly></input>
-            </div>
-            <div class="form-group">
-                <label for="outputAmount">Subscription Amount:</label>
-                <input type="text" id="outputAmount" value =${amount} readonly>
-            </div>
-            <div class="form-group">
-                <label for="familyId">Family Id</label>
-                <input type="text" id="familyId" value=${state.familyId} readonly>
-            </div>
-            <div class="form-group">
-                <label for="serialNumber">Serial Number</label>
-                <input type="text" id="serialNumber" value=${state.serialId} readonly>
-            </div>
-    </div> 
 
-      </body>
-      </html>
+        .summary-card {
+            background: #ffffff;
+            width: 420px;
+            padding: 30px 35px;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+        }
+
+        .summary-title {
+            text-align: center;
+            font-size: 26px;
+            font-weight: bold;
+            color: #4a00e0;
+            margin-bottom: 30px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 14px 0;
+            border-bottom: 1px dashed #ddd;
+        }
+
+        .summary-row:last-child {
+            border-bottom: none;
+        }
+
+        .label {
+            font-weight: 600;
+            color: #333;
+            letter-spacing: 0.5px;
+        }
+
+        .value {
+            font-weight: 500;
+            color: #ff5722;
+        }
+
+        .highlight {
+            background: linear-gradient(90deg, #ff8a00, #e52e71);
+            color: #ffffff;
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 18px;
+            margin-top: 25px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="summary-card">
+        <div class="summary-title">Subscription Summary</div>
+
+        <div class="summary-row">
+            <div class="label">Subscription for</div>
+            <div class="label">Month ${state.month}  Year ${state.year}</div>
+        </div>
+
+        <div class="summary-row">
+            <div class="label">Name</div>
+            <div class="value">${state.name}</div>
+        </div>
+
+        <div class="summary-row">
+            <div class="label">Family ID</div>
+            <div class="value">${state.familyId}</div>
+        </div>
+
+        <div class="summary-row">
+            <div class="label">Serial Number</div>
+            <div class="value">${state.serialId}</div>
+        </div>
+
+        <div class="highlight">
+            Amount : ₹ ${state.amount}
+        </div>
+    </div>
+
+</body>
+</html>
+
     `;
     
    
