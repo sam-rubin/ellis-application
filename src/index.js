@@ -5,6 +5,7 @@ const { error } = require("node:console");
 const Member = require('./models/Members');
 const subscription = require('./models/Subscription');
 const {sequelize} = require('./db')
+const {Op} = require('sequelize');
 let mainWindow;
 async function main(){
   try {
@@ -97,54 +98,86 @@ async function saveMembers(member){
 })
 console.log('Created User ',persistedMember.toJSON())
 }
-ipcMain.on("search-users", async (event, { name, familyId, birthDayEndDate,birthDayStartDate,weddingEndDate,weddingStartDate }) => {
-  console.log("inside search users", name, familyId,birthDayEndDate,birthDayStartDate,weddingEndDate,weddingStartDate);
+ipcMain.on("search-users", async (event, { name, familyId, birthDayEndDate,birthDayStartDate,weddingEndDate,weddingStartDate,searchBy }) => {
+  console.log("inside search users", name, familyId,birthDayEndDate,birthDayStartDate,weddingEndDate,weddingStartDate,searchBy);
   try {
-    if (name || familyId) {
-      let whereClause;
-
-      if (name) {
-        whereClause = ` name LIKE '%${name}%' `;
-      }
-
-      if (familyId) {
-        if (name && familyId) {
-          whereClause += ` AND familyId=${familyId}`;
-        } else {
-          whereClause = `familyId=${familyId}`;
-        }
-      }
-
-      const [rows] = await pool.execute(
-        "SELECT * FROM members WHERE " + whereClause
-      );
-      console.log("The response rows are ", rows);
-      event.reply("search-results", rows);
-    } else if(birthDayStartDate && birthDayEndDate) {
-        console.log(birthDayStartDate.slice(5),' end ' ,birthDayEndDate.slice(5) )
-        let startDate = birthDayStartDate.slice(5);
-        let endDate = birthDayEndDate.slice(5);
-        whereClause = `DATE_FORMAT(birthDay,'%m-%d') BETWEEN '${startDate}' AND '${endDate}'`;
-    const [rows] = await pool.execute(
-        "SELECT * FROM members WHERE " + whereClause
-      );
-      console.log("The response rows are ", rows);
-      event.reply("search-results", rows);
-      }else if(weddingStartDate && weddingEndDate) {
-        console.log(birthDayStartDate.slice(5),' end ' ,birthDayEndDate.slice(5) )
-        let startDate = weddingStartDate.slice(5);
-        let endDate = weddingEndDate.slice(5);
-        whereClause = `DATE_FORMAT(birthDay,'%m-%d') BETWEEN '${startDate}' AND '${endDate}'`;
-    const [rows] = await pool.execute(
-        "SELECT * FROM members WHERE " + whereClause
-      );
-      console.log("The response rows are ", rows);
-      event.reply("search-results", rows);
-      }
-  } catch (err) {
+    let rows;
+    if(searchBy == "name"){
+        rows = await Member.findAll({where: { name: { [Op.like]: `%${name}%` } }})
+    } else if (searchBy =="familyId"){
+      rows = await Member.findAll({where: { familyId: { [Op.eq]:  familyId } }})
+    } else if (searchBy=="dateOfBirth"){
+       let startDate = birthDayStartDate.slice(5);
+       let endDate = birthDayEndDate.slice(5);
+       rows = await Member.findAll({
+          where: sequelize.where(
+            sequelize.fn('DATE_FORMAT', sequelize.col('birthDay'), '%m-%d'),
+            {
+              [Op.between]: [startDate, endDate]
+          }
+      )});
+    } else if (searchBy=="weddingDay"){
+       let startDate = weddingStartDate.slice(5);
+       let endDate = weddingEndDate.slice(5);
+       rows = await Member.findAll({
+          where: sequelize.where(
+            sequelize.fn('DATE_FORMAT', sequelize.col('weddingDay'), '%m-%d'),
+            {
+              [Op.between]: [startDate, endDate]
+          }
+      )});
+    
+    }
+  console.log("The response rows are ", rows);
+   event.reply("search-results", rows);
+  }catch (err) {
     console.error("Database error:", err);
   }
-});
+    
+    
+    // if (name || familyId) {
+    //   let whereClause;
+
+    //   if (name) {
+    //     whereClause = ` name LIKE '%${name}%' `;
+    //   }
+
+    //   if (familyId) {
+    //     if (name && familyId) {
+    //       whereClause += ` AND familyId=${familyId}`;
+    //     } else {
+    //       whereClause = `familyId=${familyId}`;
+    //     }
+    //   }
+
+    //   const [rows] = await pool.execute(
+    //     "SELECT * FROM members WHERE " + whereClause
+    //   );
+    //   console.log("The response rows are ", rows);
+    //   event.reply("search-results", rows);
+    // } else if(birthDayStartDate && birthDayEndDate) {
+    //     console.log(birthDayStartDate.slice(5),' end ' ,birthDayEndDate.slice(5) )
+    //     let startDate = birthDayStartDate.slice(5);
+    //     let endDate = birthDayEndDate.slice(5);
+    //     whereClause = `DATE_FORMAT(birthDay,'%m-%d') BETWEEN '${startDate}' AND '${endDate}'`;
+    // const [rows] = await pool.execute(
+    //     "SELECT * FROM members WHERE " + whereClause
+    //   );
+    //   console.log("The response rows are ", rows);
+    //   event.reply("search-results", rows);
+    //   }else if(weddingStartDate && weddingEndDate) {
+    //     console.log(birthDayStartDate.slice(5),' end ' ,birthDayEndDate.slice(5) )
+    //     let startDate = weddingStartDate.slice(5);
+    //     let endDate = weddingEndDate.slice(5);
+    //     whereClause = `DATE_FORMAT(birthDay,'%m-%d') BETWEEN '${startDate}' AND '${endDate}'`;
+    // const [rows] = await pool.execute(
+    //     "SELECT * FROM members WHERE " + whereClause
+    //   );
+    //   console.log("The response rows are ", rows);
+    //   event.reply("search-results", rows);
+    //   }
+  }); 
+
 
 
 ipcMain.on('navigate-subscription',async (event,state) => {

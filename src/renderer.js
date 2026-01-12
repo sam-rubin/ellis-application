@@ -47,7 +47,9 @@ function searchMember(event) {
   let birthDayEndDate = submittedForm.get("bithday-end-date");
   let weddingStartDate = submittedForm.get("wedding-start-date");
   let weddingEndDate = submittedForm.get("wedding-end-date");
-  window.electron.send("search-users", { familyId, name,birthDayEndDate,birthDayStartDate,weddingEndDate,weddingStartDate });
+  let searchBy = submittedForm.get("searchBy");
+  console.log('search by ',searchBy);
+  window.electron.send("search-users", { familyId, name,birthDayEndDate,birthDayStartDate,weddingEndDate,weddingStartDate,searchBy });
 }
 
 
@@ -90,7 +92,7 @@ function createTable(results) {
       let row = document.createElement("tr");
       for (let key of tableContentKey) {
         let content = document.createElement("td");
-        content.textContent = result[key];
+        content.textContent = result["dataValues"][key];
         row.appendChild(content);
       }
       row.addEventListener('click',handleRowClicked)
