@@ -66,6 +66,10 @@ const Member = sequelize.define( 'Member',{
     mailAddress:{
         type: DataTypes.STRING,
         allowNull:true
+    },
+    subscription_amount:{
+        type: DataTypes.DOUBLE,
+        allowNull: false
     }
     
 },

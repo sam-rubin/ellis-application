@@ -49,8 +49,11 @@ function handleRowClicked(target){
     const cells =    this.querySelectorAll('td');
 
     let state = {
+        familyId:cells[0].textContent,
+        serialId:cells[1].textContent,
         name:cells[2].textContent,
-        address:cells[5].textContent
+        address:cells[5].textContent,
+        subscriptionAmount:cells[7].textContent
     } 
     console.log(state);
     window.electron.send('navigate-subscription',state);

@@ -1,0 +1,23 @@
+create table members (
+familyId int,
+serialId int,
+name VARCHAR(255) ,
+gender VARCHAR(2),
+relation VARCHAR(25),
+birthDay date,
+weddingDay date,
+dateOfBaptism date,
+dateOfConfirmation date,
+occupation VARCHAR(100),
+grossSalary int,
+bloodGroup VARCHAR(25),
+phoneNumber VARCHAR(15),
+address VARCHAR(800),
+pincode int,
+memberShip VARCHAR(100),
+mailAddress VARCHAR(255),
+PRIMARY KEY(familyId,serialId)
+);
+
+alter table church.members 
+add column subscription_amount double;

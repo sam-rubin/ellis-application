@@ -8,6 +8,7 @@ let tableContentKey = [
   "mailAddress",
   "address",
   "memberShip",
+  "subscription_amount"
 ];
 
 async function saveMember(event) {

@@ -1,0 +1,8 @@
+create table church.subscription (
+id int AUTO_INCREMENT PRIMARY KEY ,
+familyId int,
+serialId int,
+amount double,
+subMonth VARCHAR(24),
+subYear int
+);
