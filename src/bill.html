@@ -79,10 +79,10 @@
       
     </div>
     <div class="container">
-        <h2>Subscription Information</h2>
         
-    <div class="output" id="output" ">
-            <h3>Output:</h3>
+        
+    <div class="output" id="output" >
+        <h2>Subscription Information</h2>
             <div class="form-group">
                 <label for="outputName">Name:</label>
                 <input type="text" id="outputName" readonly>
@@ -105,7 +105,7 @@
             </div>
             <div class="form-group">
                 <label for="outputMonth">Month:</label>
-                <select value="">
+                <select value="" id="month">
                 <option value="">Select month</option>
                 <option value="January">January</option>
                 <option value="February">February</option>
@@ -126,6 +126,7 @@
                 <input type="text" id="year" >
             </div>
         </div>
+        <button id="printBtn" >Print</button>
     </div>
     
     <script>

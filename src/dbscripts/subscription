@@ -4,5 +4,7 @@ familyId int,
 serialId int,
 amount double,
 subMonth VARCHAR(24),
-subYear int
+subYear int,
+createdAt datetime,
+updatedAt datetime
 );

@@ -3,10 +3,10 @@ const path = require("node:path");
 const {pool} = require("./db");
 const { error } = require("node:console");
 const Member = require('./models/Members');
+const subscription = require('./models/Subscription');
 const {sequelize} = require('./db')
-let mainWindowAlias;
+let mainWindow;
 async function main(){
-
   try {
     await sequelize.sync({force: false});
     console.log('db synced');
@@ -21,7 +21,7 @@ if (require("electron-squirrel-startup")) {
 
 const createWindow = () => {
   // Create the browser window.
-  const mainWindow = new BrowserWindow({
+   mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
     icon: path.join(__dirname,"assets/ellis.png"),
@@ -33,7 +33,6 @@ const createWindow = () => {
     },
   });
 
-  mainWindowAlias = mainWindow;
   // and load the index.html of the app.
   mainWindow.loadFile(path.join(__dirname, "index.html"));
 };
@@ -149,8 +148,81 @@ ipcMain.on("search-users", async (event, { name, familyId, birthDayEndDate,birth
 
 
 ipcMain.on('navigate-subscription',async (event,state) => {
-   mainWindowAlias.loadFile(path.join(__dirname, "bill.html"));
-   mainWindowAlias.webContents.once('did-finish-load', () => {
-    mainWindowAlias.webContents.send('state-data',state);
+   mainWindow.loadFile(path.join(__dirname, "bill.html"));
+   mainWindow.webContents.once('did-finish-load', () => {
+    mainWindow.webContents.send('state-data',state);
    });
+});
+
+
+// ipcMain.on('print',async (event,state) =>{
+//   console.log(JSON.stringify(state));
+//  try{
+//   const subsc = await subscription.create({
+//     familyId: state.familyId,
+//     serialId:state.serialId,
+//     amount: state.amount,
+//     subMonth:state.month,
+//     subYear:state.year
+//   })
+// }catch(error){
+//   console.log('unable to persist the subscription information ',error);
+// }
+//   const webContents = event.sender;
+
+//   webContents.print({
+//     silent:false,
+//     printBackground:true,
+//     color:true,
+//     margin:{
+//       marginType: 'printableArea'
+//     },
+//     landscape:false,
+//     pagesPerSheet:1,
+//     collate:false,
+//     copies:1
+//   },(success,failure) => {
+//     if(!success){
+//       console.log('print failed ',failure);
+//     }
+//   } )
+// })
+
+ipcMain.on('print',async (event,state) =>{
+  console.log(JSON.stringify(state));
+ try{
+  const subsc = await subscription.create({
+    familyId: state.familyId,
+    serialId:state.serialId,
+    amount: state.amount,
+    subMonth:state.month,
+    subYear:state.year
+  })
+}catch(error){
+  console.log('unable to persist the subscription information ',error);
+}
+   const printWindow = new BrowserWindow({
+    show: false,
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true
+    }
+  });
+
+  // Load the content
+  printWindow.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(state.htmlContent)}`);
+
+  // Wait for content to load, then print
+  printWindow.webContents.on('did-finish-load', () => {
+    printWindow.webContents.print({
+      silent: false,
+      printBackground: true
+    }, (success, errorType) => {
+      if (!success) {
+        console.log('Print failed:', errorType);
+      }
+      // Close the window after printing
+      printWindow.close();
+    });
+  });
 });

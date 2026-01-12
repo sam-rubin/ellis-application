@@ -17,8 +17,12 @@ const Subscription = sequelize.define( 'Subscription',{
         autoIncrement: false,
         allowNull:false
     },
-    billDate:{
-        type: DataTypes.DATEONLY,
+    subMonth:{
+        type: DataTypes.STRING,
+        allowNull:false
+    },
+    subYear:{
+        type: DataTypes.INTEGER,
         allowNull:false
     },
     amount:{
