@@ -28,7 +28,12 @@ const Subscription = sequelize.define( 'Subscription',{
     amount:{
         type:DataTypes.DOUBLE,
         allowNull:false
+    },
+    paidDate:{
+        type:DataTypes.DATE,
+        allowNull:false
     }
+
     
 },
 {

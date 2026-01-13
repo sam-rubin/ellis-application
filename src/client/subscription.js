@@ -35,7 +35,9 @@ window.onload = () => {
             year:document.getElementById('year').value ,
             familyId:document.getElementById('familyId').value,
             serialId: document.getElementById('serialNumber').value, 
-            amount:amount};
+            amount:amount,
+            billDate:document.getElementById("billDate").value
+          };
     const htmlContent = `
       <!DOCTYPE html>
 <html lang="en">
@@ -94,7 +96,7 @@ window.onload = () => {
 
         .highlight {
             background: linear-gradient(90deg, #ff8a00, #e52e71);
-            color: #ffffff;
+            color: #000;
             padding: 12px;
             border-radius: 10px;
             text-align: center;
@@ -106,13 +108,7 @@ window.onload = () => {
 <body>
 
     <div class="summary-card">
-        <div class="summary-title">Subscription Summary</div>
-
-        <div class="summary-row">
-            <div class="label">Subscription for</div>
-            <div class="label">Month ${state.month}  Year ${state.year}</div>
-        </div>
-
+        <div class="summary-title">CSI Ellis Memorial Church - Dharapuram </div>
         <div class="summary-row">
             <div class="label">Name</div>
             <div class="value">${state.name}</div>
@@ -127,9 +123,21 @@ window.onload = () => {
             <div class="label">Serial Number</div>
             <div class="value">${state.serialId}</div>
         </div>
+        <div class="summary-row">
+            <div class="label">Month</div>
+            <div class="value">${state.month}</div>
+        </div>
+        <div class="summary-row">
+            <div class="label">Year</div>
+            <div class="value">${state.year}</div>
+        </div>
+        <div class="summary-row">
+            <div class="label">Date</div>
+            <div class="value">${state.billDate}</div>
+        </div>
 
         <div class="highlight">
-            Amount : ₹ ${state.amount}
+           Subscription Amount : ₹ ${state.amount}
         </div>
     </div>
 
@@ -148,7 +156,8 @@ window.onload = () => {
             familyId:document.getElementById('familyId').value,
             serialId: document.getElementById('serialNumber').value, 
             amount:amount,
-            htmlContent
+            htmlContent,
+            paidDate:document.getElementById('billDate').value, 
 
         });
     })

@@ -133,50 +133,7 @@ ipcMain.on("search-users", async (event, { name, familyId, birthDayEndDate,birth
   }catch (err) {
     console.error("Database error:", err);
   }
-    
-    
-    // if (name || familyId) {
-    //   let whereClause;
-
-    //   if (name) {
-    //     whereClause = ` name LIKE '%${name}%' `;
-    //   }
-
-    //   if (familyId) {
-    //     if (name && familyId) {
-    //       whereClause += ` AND familyId=${familyId}`;
-    //     } else {
-    //       whereClause = `familyId=${familyId}`;
-    //     }
-    //   }
-
-    //   const [rows] = await pool.execute(
-    //     "SELECT * FROM members WHERE " + whereClause
-    //   );
-    //   console.log("The response rows are ", rows);
-    //   event.reply("search-results", rows);
-    // } else if(birthDayStartDate && birthDayEndDate) {
-    //     console.log(birthDayStartDate.slice(5),' end ' ,birthDayEndDate.slice(5) )
-    //     let startDate = birthDayStartDate.slice(5);
-    //     let endDate = birthDayEndDate.slice(5);
-    //     whereClause = `DATE_FORMAT(birthDay,'%m-%d') BETWEEN '${startDate}' AND '${endDate}'`;
-    // const [rows] = await pool.execute(
-    //     "SELECT * FROM members WHERE " + whereClause
-    //   );
-    //   console.log("The response rows are ", rows);
-    //   event.reply("search-results", rows);
-    //   }else if(weddingStartDate && weddingEndDate) {
-    //     console.log(birthDayStartDate.slice(5),' end ' ,birthDayEndDate.slice(5) )
-    //     let startDate = weddingStartDate.slice(5);
-    //     let endDate = weddingEndDate.slice(5);
-    //     whereClause = `DATE_FORMAT(birthDay,'%m-%d') BETWEEN '${startDate}' AND '${endDate}'`;
-    // const [rows] = await pool.execute(
-    //     "SELECT * FROM members WHERE " + whereClause
-    //   );
-    //   console.log("The response rows are ", rows);
-    //   event.reply("search-results", rows);
-    //   }
-  }); 
+ }); 
 
 
 
@@ -188,39 +145,6 @@ ipcMain.on('navigate-subscription',async (event,state) => {
 });
 
 
-// ipcMain.on('print',async (event,state) =>{
-//   console.log(JSON.stringify(state));
-//  try{
-//   const subsc = await subscription.create({
-//     familyId: state.familyId,
-//     serialId:state.serialId,
-//     amount: state.amount,
-//     subMonth:state.month,
-//     subYear:state.year
-//   })
-// }catch(error){
-//   console.log('unable to persist the subscription information ',error);
-// }
-//   const webContents = event.sender;
-
-//   webContents.print({
-//     silent:false,
-//     printBackground:true,
-//     color:true,
-//     margin:{
-//       marginType: 'printableArea'
-//     },
-//     landscape:false,
-//     pagesPerSheet:1,
-//     collate:false,
-//     copies:1
-//   },(success,failure) => {
-//     if(!success){
-//       console.log('print failed ',failure);
-//     }
-//   } )
-// })
-
 ipcMain.on('print',async (event,state) =>{
   console.log(JSON.stringify(state));
  try{
@@ -229,7 +153,8 @@ ipcMain.on('print',async (event,state) =>{
     serialId:state.serialId,
     amount: state.amount,
     subMonth:state.month,
-    subYear:state.year
+    subYear:state.year,
+    paidDate:state.paidDate
   })
 }catch(error){
   console.log('unable to persist the subscription information ',error);
@@ -249,7 +174,9 @@ ipcMain.on('print',async (event,state) =>{
   printWindow.webContents.on('did-finish-load', () => {
     printWindow.webContents.print({
       silent: false,
-      printBackground: true
+      printBackground: true,
+      preload:true,
+      pagesPerSheet:1
     }, (success, errorType) => {
       if (!success) {
         console.log('Print failed:', errorType);

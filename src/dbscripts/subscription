@@ -5,6 +5,7 @@ serialId int,
 amount double,
 subMonth VARCHAR(24),
 subYear int,
+paidDate date,
 createdAt datetime,
 updatedAt datetime
 );
