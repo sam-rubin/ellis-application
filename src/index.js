@@ -303,7 +303,7 @@ ipcMain.handle('upload-excel', async (event, filePath) => {
       const [result] = await dbConnection.execute(query, [
         fileName,
         sheetName,
-        JSON.stringify("No of Rows Inserted "+":"+jsonData.length+'"')
+        JSON.stringify("No of Rows Inserted "+":"+jsonData.length)
       ]);
       
       results.push({
@@ -332,7 +332,7 @@ ipcMain.handle('get-uploads', async () => {
   try {
     const [rows] = await dbConnection.execute(`
       SELECT id, file_name, sheet_name, uploaded_at,
-             JSON_LENGTH(data) as row_count
+             data as row_count
       FROM excel_data
       ORDER BY uploaded_at DESC
     `);
