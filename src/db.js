@@ -15,6 +15,7 @@ const dbConnection = mysql.createPool({
 const sequelize = new Sequelize('church','root','Almighty@123',{
 host: "localhost", // Change this to your MySQL host
 dialect:"mysql",
+timezone: '+05:30', // IST (India Standard Time)
 logging: console.log,
 pool:{
   max:2,

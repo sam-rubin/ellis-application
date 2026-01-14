@@ -190,6 +190,7 @@ ipcMain.on('print',async (event,state) =>{
 });
 
 ipcMain.on("load-report",async(event,state) => {
+  console.log("state is ",JSON.stringify(state))
   const {familyId, name, startDate, endDate,searchBy} = state;
 if(searchBy == "name"){
     rows = await Member.findAll({where: { name: { [Op.like]: `%${name}%` } }})
@@ -197,9 +198,12 @@ if(searchBy == "name"){
         rows = await Member.findAll({where: { familyId: { [Op.eq]:  familyId } }})
 
 } else if(searchBy =="subscriptionDate"){
-        rows
+        rows =await subscription.findAll({
+          where: { paidDate : {[Op.between] : [startDate,endDate]} }
+        })
 
-}
+   event.reply("subscription-report",rows);     
+  }
 
 
 })

@@ -34,6 +34,15 @@ function searchBy(target){
     }
 }
 
+let tableContentKey = [
+  "familyId",
+  "serialId",
+  "subMonth",
+  "subYear",
+  "amount",
+  "paidDate"
+];
+
 function loadReport(event) {
   event.preventDefault(); // Prevent default form submission
   console.log("Family Id Requested to be searched is ", event);
@@ -45,4 +54,57 @@ function loadReport(event) {
   let searchBy = submittedForm.get("reportBy");
   console.log('search by ',searchBy);
   window.electron.send("load-report", { familyId, name,startDate,endDate,searchBy });
+}
+window.electron.receive("subscription-report",(results)=>{
+  console.log("Response is ",JSON.stringify(results));
+  createTable(results);
+})
+
+function createTable(results) {
+  const container = document.getElementById("results");
+  const data = [
+    [
+      "Family Id",
+      "Serial No",
+      "Subscription Month",
+      "Subscription Year",
+      "Subscription Amount",
+      "Paid Year"
+    ],
+  ];
+
+  if (results && results.length > 0) {
+    const table = document.createElement("table");
+    for (let row of data) {
+      let tr = document.createElement("tr");
+
+      for (let cell of row) {
+        let td = document.createElement("th");
+        td.textContent = cell;
+        tr.appendChild(td);
+      }
+
+      table.appendChild(tr);
+    }
+    let totalAmount =0;
+    for (let result of results) {
+      let row = document.createElement("tr");
+      for (let key of tableContentKey) {
+        let content = document.createElement("td");
+        content.textContent = result["dataValues"][key];
+        row.appendChild(content);
+      }
+    
+      totalAmount += result["dataValues"]["amount"];
+      table.appendChild(row);
+    }
+
+    container.innerHTML = ""; 
+    container.appendChild(table);
+    let h2 = document.createElement("h2");
+    h2.textContent = `Total Amount Collected ${totalAmount}`
+    container.appendChild(h2);
+  } else {
+    container.innerHTML = "<h3>No Results Found</h3>";
+  }
 }
