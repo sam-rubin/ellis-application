@@ -8,7 +8,7 @@ const Subscription = sequelize.define( 'Subscription',{
         primaryKey: true
     },
     familyId: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
         autoIncrement: false,
         allowNull:false
     },

@@ -21,3 +21,26 @@ PRIMARY KEY(familyId,serialId)
 
 alter table church.members 
 add column subscription_amount double;
+
+ALTER TABLE church.members 
+MODIFY column familyId  VARCHAR(255)
+
+ALTER TABLE church.members 
+ADD column relationship  VARCHAR(255)
+
+
+ALTER TABLE church.members  
+DROP column dateOfConfirmation
+
+ALTER TABLE church.members  
+DROP column dateOfBaptism
+
+ALTER TABLE church.members 
+ADD column confirmation  VARCHAR(10)
+
+
+ALTER TABLE church.members 
+ADD column baptism  VARCHAR(10)
+
+ALTER TABLE church.members 
+ADD column area  VARCHAR(255)

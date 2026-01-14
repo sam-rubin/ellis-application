@@ -1,7 +1,7 @@
 const mysql = require("mysql2/promise");
 const {Sequelize} = require('sequelize');
 
-const pool = mysql.createPool({
+const dbConnection = mysql.createPool({
   host: "localhost", // Change this to your MySQL host
   user: "root", // Change this to your MySQL username
   password: "Almighty@123", // Change this to your MySQL password
@@ -37,4 +37,4 @@ try {
 
 testConnection();
 
-module.exports = {pool,sequelize};
+module.exports = {dbConnection,sequelize};

@@ -1,11 +1,13 @@
-const { app, BrowserWindow, ipcMain } = require("electron");
+const { app, BrowserWindow, ipcMain,dialog } = require("electron");
 const path = require("node:path");
-const {pool} = require("./db");
+const {dbConnection} = require("./db");
 const { error } = require("node:console");
 const Member = require('./models/Members');
 const subscription = require('./models/Subscription');
 const {sequelize} = require('./db')
 const {Op} = require('sequelize');
+const fs = require('fs');
+const xlsx = require('xlsx');
 let mainWindow;
 async function main(){
   try {
@@ -185,4 +187,156 @@ ipcMain.on('print',async (event,state) =>{
       printWindow.close();
     });
   });
+});
+
+ipcMain.on("load-report",async(event,state) => {
+  const {familyId, name, startDate, endDate,searchBy} = state;
+if(searchBy == "name"){
+    rows = await Member.findAll({where: { name: { [Op.like]: `%${name}%` } }})
+} else if(searchBy == "familyId"){
+        rows = await Member.findAll({where: { familyId: { [Op.eq]:  familyId } }})
+
+} else if(searchBy =="subscriptionDate"){
+        rows
+
+}
+
+
+})
+
+// Excel Uploads 
+ipcMain.handle('select-file', async () => {
+  const result = await dialog.showOpenDialog(mainWindow, {
+    properties: ['openFile'],
+    filters: [
+      { name: 'Excel Files', extensions: ['xlsx', 'xls', 'csv'] }
+    ]
+  });
+
+  if (!result.canceled && result.filePaths.length > 0) {
+    return result.filePaths[0];
+  }
+  return null;
+});
+
+// Handle Excel file upload
+ipcMain.handle('upload-excel', async (event, filePath) => {
+  try {
+    // Read the Excel file
+    const workbook = xlsx.readFile(filePath);
+    const fileName = path.basename(filePath);
+    
+    const results = [];
+    
+    // Process each sheet
+    for (const sheetName of workbook.SheetNames) {
+      const worksheet = workbook.Sheets[sheetName];
+      const jsonData = xlsx.utils.sheet_to_json(worksheet);
+      
+      
+      // Insert into database
+      const query = `
+        INSERT INTO excel_data (file_name, sheet_name, data)
+        VALUES (?, ?, ?)
+      `;
+      //Family No	Head.No	Family Members	Gender	Relation	D.O.B	Wedding Day	Baptism	Confirmation	Occupation	Sub Amt	Sub %	Blood Group	Phone No	
+      // Address	Area	Pincode	Membership	Mail ID/Remarks					
+
+        
+        jsonData.forEach(async (value , index) => {
+          
+          console.log('value is ',value, 'index is ',index)
+         const {familyId,serialId,name,gender,relationship,birthDay,weddingDay,baptism,confirmation,occupation,subscription_amount,bloodGroup,phoneNumber,address,area,pincode,memberShip,mailAddress} = value;   
+
+    try{   
+    const persisted = await  Member.upsert(
+          {
+            familyId,
+            serialId,
+            name,
+            gender,
+            relationship,
+            birthDay: birthDay ? sequelize.literal(`STR_TO_DATE('${birthDay}', '%d.%m.%Y')`):null,
+            weddingDay: weddingDay ? sequelize.literal(`STR_TO_DATE('${weddingDay}', '%d.%m.%Y')`):null,
+            baptism,
+            confirmation,
+            occupation,
+            subscription_amount,
+            bloodGroup,
+            phoneNumber,
+            address,
+            area,
+            pincode,
+            memberShip,
+            mailAddress,
+          }
+        )
+      }catch(error){
+        console.log("error while persisting ",error);
+      }
+      
+        });
+
+      const [result] = await dbConnection.execute(query, [
+        fileName,
+        sheetName,
+        JSON.stringify("No of Rows Inserted "+":"+jsonData.length+'"')
+      ]);
+      
+      results.push({
+        sheetName,
+        rowCount: jsonData.length,
+        insertId: result.insertId
+      });
+    }
+    
+    return {
+      success: true,
+      fileName,
+      sheets: results
+    };
+  } catch (err) {
+    console.error('Upload error:', err);
+    return {
+      success: false,
+      error: err.message
+    };
+  }
+});
+
+// Handle fetching uploaded files
+ipcMain.handle('get-uploads', async () => {
+  try {
+    const [rows] = await dbConnection.execute(`
+      SELECT id, file_name, sheet_name, uploaded_at,
+             JSON_LENGTH(data) as row_count
+      FROM excel_data
+      ORDER BY uploaded_at DESC
+    `);
+    return rows;
+  } catch (err) {
+    console.error('Fetch error:', err);
+    return [];
+  }
+});
+
+// Handle fetching specific upload data
+ipcMain.handle('get-upload-data', async (event, id) => {
+  try {
+    const [rows] = await dbConnection.execute(
+      'SELECT * FROM excel_data WHERE id = ?',
+      [id]
+    );
+    
+    if (rows.length > 0) {
+      return {
+        ...rows[0],
+        data: JSON.parse(rows[0].data)
+      };
+    }
+    return null;
+  } catch (err) {
+    console.error('Fetch data error:', err);
+    return null;
+  }
 });

@@ -2,7 +2,7 @@ const {DataTypes} = require('sequelize')
 const {sequelize} = require('../db')
 const Member = sequelize.define( 'Member',{
     familyId: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
         autoIncrement: false,
         primaryKey:true
     },
@@ -19,6 +19,14 @@ const Member = sequelize.define( 'Member',{
         type: DataTypes.STRING,
         allowNull: false
     },
+    relationship:{
+        type: DataTypes.STRING,
+        allowNull:true
+    },
+    area:{
+        type: DataTypes.STRING,
+        allowNull:true
+    },
     birthDay:{
         type: DataTypes.DATEONLY,
         allowNull:true
@@ -27,12 +35,12 @@ const Member = sequelize.define( 'Member',{
         type: DataTypes.DATEONLY,
         allowNull:true
     },
-    dateOfBaptism:{
-        type: DataTypes.DATEONLY,
+    baptism:{
+        type: DataTypes.STRING,
         allowNull:true
     },
-    dateOfConfirmation:{
-        type: DataTypes.DATEONLY,
+    confirmation:{
+        type: DataTypes.STRING,
         allowNull:true
     },
     occupation:{

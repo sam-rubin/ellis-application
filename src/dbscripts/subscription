@@ -9,3 +9,6 @@ paidDate date,
 createdAt datetime,
 updatedAt datetime
 );
+
+ALTER TABLE church.members 
+MODIFY column familyId  VARCHAR(255)

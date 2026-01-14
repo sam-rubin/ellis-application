@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Members Upload</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    h1 { color: #333; }
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      margin: 5px;
+    }
+    button:hover { background: #0056b3; }
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    .file-info {
+      background: #e9ecef;
+      padding: 15px;
+      border-radius: 4px;
+      margin: 15px 0;
+    }
+    .upload-result {
+      background: #d4edda;
+      border: 1px solid #c3e6cb;
+      color: #155724;
+      padding: 15px;
+      border-radius: 4px;
+      margin: 15px 0;
+    }
+    .error {
+      background: #f8d7da;
+      border: 1px solid #f5c6cb;
+      color: #721c24;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    th {
+      background: #007bff;
+      color: white;
+    }
+    tr:hover { background: #f5f5f5; }
+    .loading {
+      text-align: center;
+      padding: 20px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📊 Members Upload</h1>
+    
+    <div>
+      <button id="selectBtn">Select Excel File</button>
+      <button id="uploadBtn" disabled>Upload to Database</button>
+      <button id="refreshBtn">Refresh Uploads</button>
+    </div>
+    
+    <div id="fileInfo"></div>
+    <div id="result"></div>
+    
+    <h2>Uploaded Files</h2>
+    <div id="uploadsList"></div>
+  </div>
+
+  <script>
+    let selectedFilePath = null;
+
+    const selectBtn = document.getElementById('selectBtn');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const refreshBtn = document.getElementById('refreshBtn');
+    const fileInfo = document.getElementById('fileInfo');
+    const result = document.getElementById('result');
+    const uploadsList = document.getElementById('uploadsList');
+
+    selectBtn.addEventListener('click', async () => {
+      selectedFilePath = await window.electron.selectFile();
+      
+      if (selectedFilePath) {
+        fileInfo.innerHTML = `
+          <div class="file-info">
+            <strong>Selected File:</strong> ${selectedFilePath}
+          </div>
+        `;
+        uploadBtn.disabled = false;
+      }
+    });
+
+    uploadBtn.addEventListener('click', async () => {
+      if (!selectedFilePath) return;
+      
+      uploadBtn.disabled = true;
+      result.innerHTML = '<div class="loading">Uploading...</div>';
+      
+      const response = await window.electron.uploadExcel(selectedFilePath);
+      
+      if (response.success) {
+        result.innerHTML = `
+          <div class="upload-result">
+            <strong>✓ Upload Successful!</strong><br>
+            File: ${response.fileName}<br>
+            Sheets processed: ${response.sheets.length}<br>
+            ${response.sheets.map(s => 
+              `- ${s.sheetName}: ${s.rowCount} rows`
+            ).join('<br>')}
+          </div>
+        `;
+        loadUploads();
+      } else {
+        result.innerHTML = `
+          <div class="upload-result error">
+            <strong>✗ Upload Failed</strong><br>
+            Error: ${response.error}
+          </div>
+        `;
+      }
+      
+      uploadBtn.disabled = false;
+    });
+
+    refreshBtn.addEventListener('click', loadUploads);
+
+    async function loadUploads() {
+      uploadsList.innerHTML = '<div class="loading">Loading...</div>';
+      const uploads = await window.electron.getUploads();
+      
+      if (uploads.length === 0) {
+        uploadsList.innerHTML = '<p>No uploads yet.</p>';
+        return;
+      }
+      
+      const table = `
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>File Name</th>
+              <th>Sheet</th>
+              <th>Rows</th>
+              <th>Upload Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${uploads.map(u => `
+              <tr>
+                <td>${u.id}</td>
+                <td>${u.file_name}</td>
+                <td>${u.sheet_name}</td>
+                <td>${u.row_count}</td>
+                <td>${new Date(u.uploaded_at).toLocaleString()}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+      
+      uploadsList.innerHTML = table;
+    }
+
+    // Load uploads on start
+    loadUploads();
+  </script>
+</body>
+</html>

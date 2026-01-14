@@ -3,11 +3,10 @@
   <head>
     <title>Search</title>
     <link rel="stylesheet" href="index.css" />
-    <script src="renderer.js"></script>
-    <script src="client/dynamicSearchForm.js"></script>
+    <script src="client/report.js"></script>
     <script >
       window.onload = () => {
-        const searchById = document.getElementById('searchBy');
+        const searchById = document.getElementById('reportBy');
         console.log(typeof searchBy)
         searchById.addEventListener('change', searchBy)
       }
@@ -22,19 +21,16 @@
 
     <div class="container">
       <h2>Member Search</h2>
-      <form id="registrationForm" onsubmit="searchMember(event)" method="post">
+      <form id="registrationForm" onsubmit="loadReport(event)" method="post">
 
         <label for="members"> Report By </label>
         <select id="reportBy" name="reportBy" value="">
           <option  value="">Select</option>
           <option  value="name">Name</option>
           <option value="familyId">Family Id</option>
-          <option value="dateOfBirth">Birth Day</option>
-          <option value="weddingDay">Wedding Day</option>
+          <option value="subscriptionDate">Subscription Date</option>
         </select>
-
         <div id="content"></div>
-
         <button type="submit">Search</button>
       </form>
     </div>
