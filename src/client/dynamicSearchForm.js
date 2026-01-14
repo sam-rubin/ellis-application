@@ -39,7 +39,29 @@ function searchBy(target){
         <input type="date" id="wedding-end-date" name="wedding-end-date">
 
         `;
-    } else {
+    } else if (field =='ageGreater'){
+         contentDiv.innerHTML = `
+         <label for="familyId">Age Greater</label>
+        <input
+          type="number"
+          id="ageGreater"
+          name="ageGreater"
+          placeholder="Enter the Age "
+        />
+        `;
+    }else if (field =='subscriptionPercentage'){
+         contentDiv.innerHTML = `
+         <label for="familyId">Subscription Percentage</label>
+        <input
+          type="number"
+          id="subscriptionPercentage"
+          name="subscriptionPercentage"
+          placeholder="Enter the Subscription Percentage"
+        />
+        `;
+    } 
+    
+    else {
         contentDiv.innerHTML ='';
     }
 }

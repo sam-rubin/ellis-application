@@ -78,6 +78,10 @@ const Member = sequelize.define( 'Member',{
     subscription_amount:{
         type: DataTypes.DOUBLE,
         allowNull: false
+    },
+    three_percent_subscription:{
+        type:DataTypes.STRING,
+        allowNull:this.true
     }
     
 },

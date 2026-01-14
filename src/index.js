@@ -100,8 +100,8 @@ async function saveMembers(member){
 })
 console.log('Created User ',persistedMember.toJSON())
 }
-ipcMain.on("search-users", async (event, { name, familyId, birthDayEndDate,birthDayStartDate,weddingEndDate,weddingStartDate,searchBy }) => {
-  console.log("inside search users", name, familyId,birthDayEndDate,birthDayStartDate,weddingEndDate,weddingStartDate,searchBy);
+ipcMain.on("search-users", async (event, { name, familyId, birthDayEndDate,birthDayStartDate,weddingEndDate,weddingStartDate,searchBy,ageGreater,subscriptionPercentage }) => {
+  console.log("inside search users", name, familyId,birthDayEndDate,birthDayStartDate,weddingEndDate,weddingStartDate,searchBy,ageGreater,subscriptionPercentage);
   try {
     let rows;
     if(searchBy == "name"){
@@ -129,6 +129,22 @@ ipcMain.on("search-users", async (event, { name, familyId, birthDayEndDate,birth
           }
       )});
     
+    } else if (searchBy == "subscriptionPercentage"){
+       rows = await Member.findAll({
+          where: 
+            {
+              three_percent_subscription: {[Op.gte] : subscriptionPercentage}
+            }
+      });
+    } else if(searchBy =="ageGreater"){
+      const seventyYearsAgo = new Date();
+     seventyYearsAgo.setFullYear(seventyYearsAgo.getFullYear() - ageGreater);
+      rows = await Member.findAll({
+          where: 
+            {
+              birthDay: {[Op.lte] : seventyYearsAgo}
+            }
+      });
     }
   console.log("The response rows are ", rows);
    event.reply("search-results", rows);
@@ -252,7 +268,7 @@ ipcMain.handle('upload-excel', async (event, filePath) => {
         jsonData.forEach(async (value , index) => {
           
           console.log('value is ',value, 'index is ',index)
-         const {familyId,serialId,name,gender,relationship,birthDay,weddingDay,baptism,confirmation,occupation,subscription_amount,bloodGroup,phoneNumber,address,area,pincode,memberShip,mailAddress} = value;   
+         const {familyId,serialId,name,gender,relationship,birthDay,weddingDay,baptism,confirmation,occupation,subscription_amount,bloodGroup,phoneNumber,address,area,pincode,memberShip,mailAddress,three_percent_subscription} = value;   
 
     try{   
     const persisted = await  Member.upsert(
@@ -275,6 +291,7 @@ ipcMain.handle('upload-excel', async (event, filePath) => {
             pincode,
             memberShip,
             mailAddress,
+            three_percent_subscription,
           }
         )
       }catch(error){

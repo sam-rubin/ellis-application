@@ -44,3 +44,6 @@ ADD column baptism  VARCHAR(10)
 
 ALTER TABLE church.members 
 ADD column area  VARCHAR(255)
+
+alter table church.members 
+add column three_percent_subscription VARCHAR(10)

@@ -47,9 +47,13 @@ function searchMember(event) {
   let birthDayEndDate = submittedForm.get("bithday-end-date");
   let weddingStartDate = submittedForm.get("wedding-start-date");
   let weddingEndDate = submittedForm.get("wedding-end-date");
+  let ageGreater = submittedForm.get("ageGreater");
+  let subscriptionPercentage = submittedForm.get("subscriptionPercentage");
+  
+
   let searchBy = submittedForm.get("searchBy");
   console.log('search by ',searchBy);
-  window.electron.send("search-users", { familyId, name,birthDayEndDate,birthDayStartDate,weddingEndDate,weddingStartDate,searchBy });
+  window.electron.send("search-users", { familyId, name,birthDayEndDate,birthDayStartDate,weddingEndDate,weddingStartDate,searchBy,ageGreater,subscriptionPercentage });
 }
 
 
