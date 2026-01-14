@@ -53,7 +53,12 @@ function loadReport(event) {
   let endDate = submittedForm.get("end-date");
   let searchBy = submittedForm.get("reportBy");
   console.log('search by ',searchBy);
-  window.electron.send("load-report", { familyId, name,startDate,endDate,searchBy });
+  if(searchBy == "subscriptionDate"){
+    window.electron.send("load-report", { familyId, name,startDate,endDate,searchBy });  
+  } else {
+  window.electron.send("search-users-report", { familyId, name,searchBy });
+  }
+  
 }
 window.electron.receive("subscription-report",(results)=>{
   console.log("Response is ",JSON.stringify(results));
@@ -107,4 +112,74 @@ function createTable(results) {
   } else {
     container.innerHTML = "<h3>No Results Found</h3>";
   }
+}
+let userContentKey = [
+  "familyId",
+  "serialId",
+  "name"
+]
+
+window.electron.receive("search-report-results",(results) => {
+    console.log("Response is ",JSON.stringify(results));
+    createUserTable(results);
+
+})
+
+function createUserTable(results) {
+  const container = document.getElementById("results");
+  const data = [
+    [
+      "Family Id",
+      "Serial No",
+      "Name"
+    ],
+  ];
+
+  if (results && results.length > 0) {
+    const table = document.createElement("table");
+    for (let row of data) {
+      let tr = document.createElement("tr");
+
+      for (let cell of row) {
+        let td = document.createElement("th");
+        td.textContent = cell;
+        tr.appendChild(td);
+      }
+
+      table.appendChild(tr);
+    }
+
+    for (let result of results) {
+      let row = document.createElement("tr");
+      for (let key of userContentKey) {
+        let content = document.createElement("td");
+        content.textContent = result["dataValues"][key];
+        row.appendChild(content);
+      }
+      row.addEventListener('click',handleRowClicked)
+      
+      table.appendChild(row);
+    }
+
+    container.innerHTML = ""; 
+    container.appendChild(table);
+  } else {
+    container.innerHTML = "<h3>No Results Found</h3>";
+  }
+}
+
+function handleRowClicked(target){
+    console.log(target);
+    const cells =    this.querySelectorAll('td');
+
+    let state = {
+        familyId:cells[0].textContent,
+        serialId:cells[1].textContent,
+        searchBy:'family',
+    } 
+    console.log(state);
+    window.electron.send('load-report',state);
+
+
+
 }

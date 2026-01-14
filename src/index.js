@@ -191,20 +191,22 @@ ipcMain.on('print',async (event,state) =>{
 
 ipcMain.on("load-report",async(event,state) => {
   console.log("state is ",JSON.stringify(state))
-  const {familyId, name, startDate, endDate,searchBy} = state;
-if(searchBy == "name"){
-    rows = await Member.findAll({where: { name: { [Op.like]: `%${name}%` } }})
-} else if(searchBy == "familyId"){
-        rows = await Member.findAll({where: { familyId: { [Op.eq]:  familyId } }})
-
-} else if(searchBy =="subscriptionDate"){
+  const {familyId, serialId, startDate, endDate,searchBy} = state;
+if(searchBy == "family"){
+    rows =await subscription.findAll({
+          where: { 
+                 familyId :  familyId,
+                 serialId:serialId
+                } 
+        })
+}  else if(searchBy =="subscriptionDate"){
         rows =await subscription.findAll({
           where: { paidDate : {[Op.between] : [startDate,endDate]} }
         })
 
-   event.reply("subscription-report",rows);     
+     
   }
-
+event.reply("subscription-report",rows);   
 
 })
 
@@ -344,3 +346,19 @@ ipcMain.handle('get-upload-data', async (event, id) => {
     return null;
   }
 });
+
+ipcMain.on("search-users-report", async (event, { name, familyId,searchBy }) => {
+  console.log("inside search users report", name, familyId,searchBy);
+  try {
+    let rows;
+    if(searchBy == "name"){
+        rows = await Member.findAll({where: { name: { [Op.like]: `%${name}%` } }})
+    } else if (searchBy =="familyId"){
+      rows = await Member.findAll({where: { familyId: { [Op.eq]:  familyId } }})
+    } 
+  console.log("The response rows are ", rows);
+   event.reply("search-report-results", rows);
+  }catch (err) {
+    console.error("Database error:", err);
+  }
+ }); 
