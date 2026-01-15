@@ -1,0 +1,8 @@
+CREATE TABLE IF NOT EXISTS church.excel_data (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        file_name VARCHAR(255),
+        sheet_name VARCHAR(255),
+        data JSON,
+        uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
