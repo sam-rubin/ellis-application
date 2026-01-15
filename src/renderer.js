@@ -8,7 +8,9 @@ let tableContentKey = [
   "mailAddress",
   "address",
   "memberShip",
-  "subscription_amount"
+  "subscription_amount",
+  "birthDay",
+  "weddingDay"
 ];
 
 async function saveMember(event) {
@@ -23,13 +25,14 @@ async function saveMember(event) {
 
   console.log("inside save member", member);
   let response = await window.electron.send("save-member", member);
- 
  console.log("The response is ", response);
+  
+ 
 }
 
 window.electron.receive("registration-response",(response) =>{
   console.log('Registration Response is ',response);
-  if(response === 'error'){
+  if(response === 'failure'){
       alert("Member Registration Failed");
   } else {
       alert("Member has been Registered Successfully");
@@ -74,7 +77,9 @@ function createTable(results) {
       "Email address",
       "Address",
       "Membership",
-      "Subscription"
+      "Subscription",
+      "Date of Birth",
+      "Date of Wedding"
     ],
   ];
 

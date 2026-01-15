@@ -67,7 +67,7 @@ app.on("window-all-closed", () => {
 ipcMain.on("save-member", async (channel, member) => {
  try{
   let response = await saveMembers(member);
-  channel.reply('registration-response',response === 'error occurred' ? "error" : "success");
+  channel.reply('registration-response',response === 'failure' ? "error" : "success");
  }catch(error){
   console.log("Inside the error blog ",error);
  }
@@ -77,9 +77,11 @@ ipcMain.on("save-member", async (channel, member) => {
 // code. You can also put them in separate files and import them here.
 
 async function saveMembers(member){
- const  {familyId,serialId,name,gender,relation,mailAddress,birthDay,weddingDay,dateOfConfirmation,dateOfBaptism,occupation,grossSalary,bloodGroup,phoneNumber,address,pincode,memberShip} = member;
+  try{
+ const  {familyId,serialId,name,gender,relation,mailAddress,birthDay,weddingDay,subscriptionAmount,
+  dateOfConfirmation,dateOfBaptism,occupation,grossSalary,bloodGroup,phoneNumber,address,pincode,memberShip,area,subscriptionPercentage} = member;
 
-  const persistedMember = await Member.create({
+  const persistedMember = await Member.upsert({
     familyId,
     serialId,
     name,
@@ -88,17 +90,26 @@ async function saveMembers(member){
     mailAddress,
     birthDay,
     weddingDay : weddingDay || null,
-    dateOfConfirmation : dateOfConfirmation || null,
-    dateOfBaptism : dateOfBaptism || null,
+    confirmation : dateOfConfirmation || null,
+    baptism : dateOfBaptism || null,
     occupation : occupation || null,
     grossSalary : grossSalary || null,
     bloodGroup: bloodGroup || null,
     phoneNumber:phoneNumber || null,
     address,
     pincode: pincode || null,
-    memberShip
+    memberShip,
+    area,
+    subscription_amount:subscriptionAmount,
+    three_percent_subscription:subscriptionPercentage
 })
-console.log('Created User ',persistedMember.toJSON())
+console.log('Created User ',JSON.stringify(persistedMember))
+return "success";
+}catch(error ){
+  console.log("error occured ",error);
+  return " failure";
+  }
+
 }
 ipcMain.on("search-users", async (event, { name, familyId, birthDayEndDate,birthDayStartDate,weddingEndDate,weddingStartDate,searchBy,ageGreater,subscriptionPercentage }) => {
   console.log("inside search users", name, familyId,birthDayEndDate,birthDayStartDate,weddingEndDate,weddingStartDate,searchBy,ageGreater,subscriptionPercentage);

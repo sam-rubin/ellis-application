@@ -77,12 +77,21 @@
         <input type="date" id="weddingDay" name="weddingDay"  />
         <span class="error" id="dowError"></span>
 
-        <label for="dateOfConfirmation">Date of Confirmation:</label>
-        <input type="date" id="dateOfConfirmation" name="dateOfConfirmation"  />
+        <label for="confirmation"> Confirmation</label>
+        <select id="dateOfConfirmation" name="dateOfConfirmation">
+          <option value="">--select--</option>
+          <option value="Y">Y</option>
+          <option value="N">N</option>
+        </select>
         <span class="error" id="docError"></span>
 
-        <label for="dateOfBaptism">Date of Baptism:</label>
-        <input type="date" id="dateOfBaptism" name="dateOfBaptism"  />
+        <label for="baptism">Baptism</label>
+        <select id="dateOfBaptism" name="dateOfBaptism">
+          <option value="">--select--</option>
+          <option value="Y">Y</option>
+          <option value="N">N</option>
+        </select>
+        
 
         <label for="occupation">Occupation</label>
         <input type="text" id="occupation" name="occupation"  />
@@ -100,14 +109,20 @@
         <label for="address">Address</label>
         <textarea id="address" name="address" rows="3" cols="10"></textarea>
 
+        <label for="phoneNumber">Area</label>
+        <input type="text" id="area" name="area"  />
+
         <label for="pincode">PIN Code</label>
         <input type="number" id="pincode" name="pincode"  />
 
         <label for="memberShip">MemberShip</label>
-        <input type="number" id="memberShip" name="memberShip"  />
+        <input type="text" id="memberShip" name="memberShip"  />
 
         <label for="subscription amount">Subscription Amount</label>
         <input type="number" id="subscriptionAmount" name="subscriptionAmount"  />
+        
+        <label for="subscription_percentage">Subscription Percentage</label>
+        <input type="number" id="subscriptionPercentage" name="subscriptionPercentage"  />
         
         
         <button type="submit">Register</button>
